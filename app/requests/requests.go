@@ -2,7 +2,6 @@
 package requests
 
 import (
-	"fmt"
 	"gintest/pkg/response"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +23,6 @@ func Validate(c *gin.Context, obj interface{}, handler ValidatorFunc) bool {
 		response.BadRequest(c, err, "请求解析错误，请确认请求格式是否正确。上传文件请使用 multipart 标头，参数请使用 JSON 格式。")
 		return false
 	}
-	fmt.Print("获取到数据3333",obj)
 	// 2. 表单验证
 	errs := handler(obj, c)
 

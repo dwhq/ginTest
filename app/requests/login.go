@@ -1,21 +1,20 @@
 package requests
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/thedevsaddam/govalidator"
 )
 
 type LoginRequest struct {
-	Account      string `json:"account,omitempty"  valid:"account"`
+	Account  string `json:"account,omitempty"  valid:"account"`
 	Password string `json:"password,omitempty" valid:"password"`
 }
+
 func Login(data interface{}, c *gin.Context) map[string][]string {
 	rules := govalidator.MapData{
-		"account":       []string{"required"},
-		"password":       []string{"required"},
+		"account":  []string{"required"},
+		"password": []string{"required"},
 	}
-	fmt.Print("获取到数据",data)
 	messages := govalidator.MapData{
 		"account": []string{
 			"account:用户名为必填项",

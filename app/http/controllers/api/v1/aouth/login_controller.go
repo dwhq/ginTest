@@ -5,6 +5,7 @@ import (
 	"gintest/app/requests"
 	"gintest/app/services/aouth"
 	"gintest/pkg/apiResponse"
+	"gintest/pkg/auth"
 	"gintest/pkg/response"
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +16,6 @@ type LoginController struct {
 }
 
 // Login 会员登录
-
 func (lc *LoginController) Login(c *gin.Context) {
 	request := requests.LoginRequest{}
 	// 1. 验证表单
@@ -23,11 +23,19 @@ func (lc *LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	data,err := aouth.Login(request.Account,request.Password)
+	data, err := aouth.Login(request.Account, request.Password)
 	if err != nil {
 		// 失败，显示错误提示
 		response.Unauthorized(c, err.Error())
-	}else {
-		apiResponse.Data(c,data)
+	} else {
+		apiResponse.Data(c, data)
 	}
+}
+func (lc *LoginController) Me(c *gin.Context) {
+	userModel := auth.CurrentUser(c)
+	response.Data(c, userModel)
+}
+func (lc *LoginController) GenerateAccount(c *gin.Context) {
+	userModel := aouth.GenerateAccount()
+	response.Data(c, userModel)
 }

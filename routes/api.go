@@ -4,18 +4,21 @@ import (
 	v1 "gintest/app/http/controllers/api/v1"
 	"gintest/app/http/controllers/api/v1/aouth"
 	shop "gintest/app/http/controllers/api/v1/shop"
+	"gintest/app/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
 // RegisterWebRoutes 注册网页相关路由
 func RegisterWebRoutes(router *gin.Engine) {
 	page := new(v1.ArticlesController)
-	router.GET("/index", page.Index)//系统首页
+	router.GET("/index", page.Index) //系统首页
 	product := new(shop.ProductController)
-	router.GET("/product", product.Index)//商品列表
+	router.GET("/product", product.Index) //商品列表
 	//用户认证
 	login := new(aouth.LoginController)
-	router.POST("/auth/login", login.Login)//商品列表
+	router.POST("/auth/login", login.Login)                     //登录
+	router.GET("/auth/generate_account", login.GenerateAccount) //生成会员编号
 
+	router.GET("/auth/me", middlewares.AuthJWT(), login.Me) //用户信息
 
 }
