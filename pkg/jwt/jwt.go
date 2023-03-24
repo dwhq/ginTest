@@ -34,8 +34,8 @@ type JWT struct {
 
 // MyCustomClaims 自定义载荷
 type MyCustomClaims struct {
-	UserID       string `json:"user_id"`
-	UserName     string `json:"user_name"`
+	UserID   string `json:"user_id"`
+	UserName string `json:"user_name"`
 
 	// StandardClaims 结构体实现了 Claims 接口继承了  Valid() 方法
 	// JWT 规定了7个官方字段，提供使用:
@@ -69,7 +69,7 @@ func (jwt *JWT) ParserToken(c *gin.Context) (*MyCustomClaims, error) {
 
 	// 2. 解析出错
 	if err != nil {
-		//validationErr, ok := err.(jwtpkg.ValidationError)
+		//validationErr, ok := err.()
 		//if ok {
 		//	if validationErr.Errors == jwtpkg.ValidationErrorMalformed {
 		//		return nil, ErrTokenMalformed
@@ -77,7 +77,12 @@ func (jwt *JWT) ParserToken(c *gin.Context) (*MyCustomClaims, error) {
 		//		return nil, ErrTokenExpired
 		//	}
 		//}
-		return nil, ErrTokenMalformed
+		if errors.Is(err, jwtpkg.ErrTokenMalformed) {
+			return nil, ErrTokenInvalid
+		} else if errors.Is(err, jwtpkg.ErrTokenExpired) || errors.Is(err, jwtpkg.ErrTokenNotValidYet) {
+			return nil, ErrTokenExpired
+		}
+		return nil, ErrTokenInvalid
 	}
 
 	// 3. 将 token 中的 claims 信息解析出来和 JWTCustomClaims 数据结构进行校验
@@ -135,8 +140,8 @@ func (jwt *JWT) IssueToken(userID string, userName string) (token string, expire
 		jwtpkg.RegisteredClaims{
 			NotBefore: jwtpkg.NewNumericDate(app.TimenowInTimezone()), // 签名生效时间
 			IssuedAt:  jwtpkg.NewNumericDate(app.TimenowInTimezone()), // 首次签名时间（后续刷新 Token 不会更新）
-			ExpiresAt: expireAtTime,                   // 签名过期时间
-			Issuer:    config.GetString("app.name"),   // 签名颁发者
+			ExpiresAt: expireAtTime,                                   // 签名过期时间
+			Issuer:    config.GetString("app.name"),                   // 签名颁发者
 		},
 	}
 
