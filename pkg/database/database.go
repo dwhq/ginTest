@@ -23,12 +23,12 @@ func Connect(dbConfig gorm.Dialector, _logger gormlogger.Interface) {
 	DB, err = gorm.Open(dbConfig, &gorm.Config{
 		Logger: _logger,
 		NamingStrategy: schema.NamingStrategy{
-			TablePrefix: config.GetString("database.mysql.prefix"),   // 表名前缀，`Article` 的表名应该是 `it_articles`
+			TablePrefix: config.GetString("database.mysql.prefix"), // 表名前缀，`Article` 的表名应该是 `it_articles`
 		},
 	})
 	// 处理错误
 	if err != nil {
-		fmt.Println(err.Error())
+		panic(err)
 	}
 
 	// 获取底层的 sqlDB
